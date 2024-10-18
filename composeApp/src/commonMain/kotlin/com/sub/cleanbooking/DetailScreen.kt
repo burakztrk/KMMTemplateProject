@@ -19,11 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun DetailScreen(
-    viewModel: DetailViewModel = viewModel { DetailViewModel() },
+    viewModel: DetailViewModel = koinViewModel(),
     currentScreen: NavScreen,
     onBack: OnBack
 ) {
@@ -37,7 +37,7 @@ fun DetailScreen(
                 IconButton(onClick = onBack) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = ""
+                        contentDescription = null
                     )
                 }
             }
