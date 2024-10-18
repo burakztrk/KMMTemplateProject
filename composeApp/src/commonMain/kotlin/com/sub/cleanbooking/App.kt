@@ -1,43 +1,74 @@
 package com.sub.cleanbooking
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Button
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.material.Scaffold
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import org.jetbrains.compose.resources.painterResource
-
-import kotlinproject.composeapp.generated.resources.Res
-import kotlinproject.composeapp.generated.resources.compose_multiplatform
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import org.jetbrains.compose.ui.tooling.preview.Preview
+
+typealias OnNavigate = (NavScreen) -> Unit
+typealias OnBack = () -> Unit
 
 @Composable
 @Preview
-fun App() {
-    MaterialTheme {
-        var showContent by remember { mutableStateOf(false) }
+fun App(
+    navController: NavHostController = rememberNavController()
+) {
+    val onNavigate: OnNavigate = { targetScreen: NavScreen ->
+        navController.navigate(targetScreen.name)
+    }
 
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Button(
-                onClick = { showContent = !showContent }) {
-                Text("Click meee!")
-            }
-            AnimatedVisibility(showContent) {
-                val greeting = remember { Greeting().greet() }
-                Column(
-                    Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-                    Text("Compose: $greeting")
+    val onBack: OnBack = {
+        val canNavigateBack = navController.previousBackStackEntry != null
+        if (canNavigateBack) {
+            navController.popBackStack()
+        }
+    }
+
+    MaterialTheme {
+        Scaffold{
+            NavHost(
+                modifier = Modifier.padding(it),
+                navController = navController,
+                startDestination = NavScreen.Splash.name,
+            ) {
+                composable(route = NavScreen.Splash.name) {
+                    EmptyScreen(
+                        currentScreen = NavScreen.Splash,
+                        nextScreen = NavScreen.Login,
+                        onNavigate = onNavigate,
+                        onBack = onBack
+                    )
+                }
+
+                composable(route = NavScreen.Login.name) {
+                    EmptyScreen(
+                        currentScreen = NavScreen.Login,
+                        nextScreen = NavScreen.List,
+                        onNavigate = onNavigate,
+                        onBack = onBack
+                    )
+                }
+
+                composable(route = NavScreen.List.name) {
+                    EmptyScreen(
+                        currentScreen = NavScreen.List,
+                        nextScreen = NavScreen.Detail,
+                        onNavigate = onNavigate,
+                        onBack = onBack
+                    )
+                }
+
+                composable(route = NavScreen.Detail.name) {
+                    DetailScreen(
+                        currentScreen = NavScreen.Detail,
+                        onBack = onBack
+                    )
                 }
             }
         }
